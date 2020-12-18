@@ -294,11 +294,13 @@ func (c *oidcConnector) createIdentity(ctx context.Context, identity connector.I
 	if !found {
 		return identity, fmt.Errorf("missing \"%s\" claim", userNameKey)
 	}
+	name = strings.ToLower(name)
 
 	preferredUsername, found := claims["preferred_username"].(string)
 	if (!found || c.overrideClaimMapping) && c.preferredUsernameKey != "" {
 		preferredUsername, _ = claims[c.preferredUsernameKey].(string)
 	}
+	preferredUsername = strings.ToLower(preferredUsername)
 
 	hasEmailScope := false
 	for _, s := range c.oauth2Config.Scopes {
@@ -315,6 +317,7 @@ func (c *oidcConnector) createIdentity(ctx context.Context, identity connector.I
 		emailKey = c.emailKey
 		email, found = claims[emailKey].(string)
 	}
+	email = strings.ToLower(email)
 
 	if !found && hasEmailScope {
 		return identity, fmt.Errorf("missing email claim, not found \"%s\" key", emailKey)
